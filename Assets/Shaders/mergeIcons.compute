@@ -1,0 +1,26 @@
+﻿#pragma kernel MergeIcons
+
+Texture2D<float4> R;
+Texture2D<float4> G;
+Texture2D<float4> B;
+float Rrot;
+float Grot;
+float Brot;
+RWTexture2D<float4> Result;
+
+[numthreads(16, 16, 1)]
+void MergeIcons(uint3 id : SV_DispatchThreadID)
+{
+
+	int sx = id.x - 128;
+	int sy = id.y - 128;
+
+	int2 rid = int2((int)(sx * cos(Rrot) - sy * sin(Rrot) + 96), (int)(sx * sin(Rrot) + sy * cos(Rrot) + 96));
+	int2 gid = int2((int)(sx * cos(Grot) - sy * sin(Grot) + 96), (int)(sx * sin(Grot) + sy * cos(Grot) + 96));
+	int2 bid = int2((int)(sx * cos(Brot) - sy * sin(Brot) + 96), (int)(sx * sin(Brot) + sy * cos(Brot) + 96));
+
+	float4 rotatedR = rid[0] < 0 || rid[0] >= 192 || rid[1] < 0 || rid[1] >= 192 ? float4(1, 1, 1, 1) : R[rid];
+	float4 rotatedG = gid[0] < 0 || gid[0] >= 192 || gid[1] < 0 || gid[1] >= 192 ? float4(1, 1, 1, 1) : G[gid];
+	float4 rotatedB = bid[0] < 0 || bid[0] >= 192 || bid[1] < 0 || bid[1] >= 192 ? float4(1, 1, 1, 1) : B[bid];
+	Result[id.xy] = float4(rotatedR.x, rotatedG.y, rotatedB.z, 1);
+}

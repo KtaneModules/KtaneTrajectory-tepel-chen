@@ -1,0 +1,48 @@
+﻿#pragma kernel DrawLine
+#pragma kernel Decay
+Texture2D<float4> image;
+RWTexture2D<float4> result;
+float inputX;
+float inputY;
+float prevX;
+float prevY;
+float decaySpeed;
+float fade;
+
+[numthreads(16, 16, 1)]
+void DrawLine(uint3 id : SV_DispatchThreadID)
+{
+	float ldx = prevX - inputX;
+	float ldy = prevY - inputY;
+	float r = ldx * ldx + ldy * ldy;
+	float tt = -(ldx * (inputX - id.x) + ldy * (inputY - id.y));
+	float mag;
+	if (tt < 0) {
+		float dx = inputX - id.x;
+		float dy = inputY - id.y;
+		mag = dx * dx + dy * dy;
+	}
+	else if (tt > r) {
+		float dx = prevX - id.x;
+		float dy = prevY - id.y;
+		mag = dx * dx + dy * dy;
+	}
+	else {
+		float f = ldx * (inputY - id.y) - ldy * (inputX - id.x);
+		mag = f * f / r;
+	}
+
+	if (mag < 7 * 7) result[id.xy] = float4(0, 0, 0, 1);
+	else if (mag < 12 * 12) {
+		float val = min(image[id.xy] + decaySpeed, (sqrt(mag) - 7.) * .16f);
+		result[id.xy] = float4(val, val, val, 1.);
+	}
+	else result[id.xy] = min(1, image[id.xy] + decaySpeed);
+}
+
+
+[numthreads(16, 16, 1)]
+void Decay(uint3 id : SV_DispatchThreadID)
+{
+	result[id.xy] = min(1, image[id.xy] + decaySpeed) * fade;
+}
