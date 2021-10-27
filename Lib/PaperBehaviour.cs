@@ -82,7 +82,9 @@ class PaperBehaviour : CacheableBehaviour
 	private void Draw(Vector2 p)
 	{
 		if (prev == null) prev = p;
-		mask = drawLineKernel.Compute(mask, (Vector2)prev, p);
+		var tmp = drawLineKernel.Compute(mask, (Vector2)prev, p);
+		Destroy(mask);
+		mask = tmp;
 		DrawBase();
 		prev = p;
 	}
@@ -90,7 +92,9 @@ class PaperBehaviour : CacheableBehaviour
 	private void Draw(float fade)
 	{
 		prev = null;
-		mask = decayKernel.Compute(mask, fade);
+		var tmp = decayKernel.Compute(mask, fade);
+		Destroy(mask);
+		mask = tmp;
 		DrawBase();
 
 	}
@@ -98,9 +102,10 @@ class PaperBehaviour : CacheableBehaviour
 	private void DrawBase()
 	{
 		var unmasked = mergeIconsKernel.Compute(icons[0], icons[1], icons[2]);
+		var tmp = Get<Renderer>().material.mainTexture;
 		Get<Renderer>().material.mainTexture = applyMaskKernel.Compute(mask, unmasked, color);
-
-
+		Destroy(unmasked);
+		if(tmp is RenderTexture) Destroy(tmp);
 	}
 
 	private void UpdateColor()

@@ -1,8 +1,6 @@
-﻿// Each #kernel tells which function to compile; you can have many kernels
+﻿
 #pragma kernel ApplyMask
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
 Texture2D<float4> Mask;
 Texture2D<float4> Image;
 float4 Color;

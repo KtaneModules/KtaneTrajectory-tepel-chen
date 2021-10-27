@@ -18,7 +18,6 @@ namespace KModkitLib
 
         IEnumerator Start()
         {
-            Display.Deactivate();
             Get<KMSelectable>().OnFocus += HandleFocus;
             Get<KMSelectable>().OnDefocus += HandleDefocus;
 
@@ -38,7 +37,7 @@ namespace KModkitLib
 
             Display.OnClose += () =>
             {
-                KTInputManager.Instance.SelectableManager.HandleCancel();
+                if(!Application.isEditor) KTInputManager.Instance.SelectableManager.HandleCancel();
             };
 
             puzzle = new Puzzle(this);
@@ -64,7 +63,10 @@ namespace KModkitLib
 
         private void HandleSubmit()
         {
-            KTInputManager.Instance.SelectableManager.HandleCancel();
+            if (!Application.isEditor)
+            {
+                KTInputManager.Instance.SelectableManager.HandleCancel();
+            }
             if (puzzle.Check())
             {
                 Drawing.HandleSolve(() => { Solve(); });

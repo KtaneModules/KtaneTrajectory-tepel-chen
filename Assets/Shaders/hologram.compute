@@ -1,0 +1,23 @@
+﻿#pragma kernel Hologram
+
+Texture2D<float4> Image;
+RWTexture2D<float4> Result;
+float Time;
+int W;
+int H;
+int HorizRandStrength;
+
+[numthreads(8,8,1)]
+void Hologram(uint3 id : SV_DispatchThreadID)
+{
+    float afterSin = Image[id.xy].w * (sin((Time*40+ id.y)*0.15f) * 0.2 + 0.8) + 0.2;
+    float afterLin = -(float(uint(id.y + Time * 200) % H) / float(H)) * 0.5 + 1;
+    float4 beforeHoriz = float4(
+    Image[id.xy].x,
+    Image[id.xy].y,
+    Image[id.xy].z,
+    Image[id.xy].w * afterSin * afterLin
+    );
+    float horizrand = sin(Time *id.y) * (5 + HorizRandStrength);
+    Result[int2(id.x + horizrand, id.y)] = beforeHoriz;
+}

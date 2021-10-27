@@ -100,6 +100,7 @@
     <Compile Include="Kernels\Decay.cs" />
     <Compile Include="Kernels\DrawLine.cs" />
     <Compile Include="Kernels\ApplyMask.cs" />
+    <Compile Include="Kernels\Hologram.cs" />
     <Compile Include="Kernels\MergeIcons.cs" />
     <Compile Include="KMBombInfoExtensions.cs" />
     <Compile Include="KMBossModule.cs" />
