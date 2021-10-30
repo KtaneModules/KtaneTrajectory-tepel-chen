@@ -36,7 +36,7 @@ namespace Kernels
 
             shader.SetTexture(kernelIndex, "image", texture);
             shader.SetTexture(kernelIndex, "result", result);
-            shader.SetFloat("decaySpeed", Time.deltaTime * 3f);
+            shader.SetFloat("decaySpeed", Time.deltaTime * 10);
             shader.SetFloat("fade", fade);
 
             shader.Dispatch(kernelIndex, texture.width / (int)shaderX, texture.height / (int)shaderY, (int)shaderZ);

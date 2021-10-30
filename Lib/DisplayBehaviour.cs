@@ -25,14 +25,14 @@ class DisplayBehaviour: CacheableBehaviour
     internal Action OnClose;
 
     private bool isActive;
+    private float str = 60;
+    private Coroutine animationCoroutine;
     private Texture baseTexture;
     private HologramKernel hologramKernel;
 
 
     void Start()
     {
-        transform.localPosition = new Vector3(0, 0, 0);
-        transform.localScale = new Vector3(0, 0, 0);
         SubmitButton.OnInteract += () =>
         {
             if (!isActive) return false;
@@ -66,6 +66,7 @@ class DisplayBehaviour: CacheableBehaviour
         };
         baseTexture = Get<Renderer>().material.mainTexture;
         hologramKernel = new HologramKernel(hologramShader);
+        Get<Renderer>().enabled = false;
     }
 
     void Update()
@@ -79,14 +80,14 @@ class DisplayBehaviour: CacheableBehaviour
 
     internal void Activate()
     {
-        transform.localPosition = new Vector3(0, 0.0632f, 0);
-        transform.localScale = new Vector3(0.02f, 0.02f, 0.02f);
-        StartCoroutine(ActivateCoroutine());
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        animationCoroutine = StartCoroutine(ActivateCoroutine());
     }
 
     internal IEnumerator ActivateCoroutine()
     {
-        for (var str = 60.0f; str > 0; str -= Time.deltaTime * 100)
+        Get<Renderer>().enabled = true;
+        for (; str > 0; str -= Time.deltaTime * 100)
         {
             if (baseTexture == null)
             {
@@ -104,12 +105,13 @@ class DisplayBehaviour: CacheableBehaviour
     internal void Deactivate()
     {
         isActive = false;
-        StartCoroutine(DeactivateCoroutine());
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        animationCoroutine = StartCoroutine(DeactivateCoroutine());
     }
 
     internal IEnumerator DeactivateCoroutine()
     {
-        for (var str = .0f; str < 60; str += Time.deltaTime * 300f)
+        for (; str < 60; str += Time.deltaTime * 300f)
         {
             if (baseTexture == null)
             {
@@ -121,7 +123,6 @@ class DisplayBehaviour: CacheableBehaviour
             if (tmp != baseTexture) DestroyImmediate(tmp, true);
             yield return null;
         }
-        transform.localPosition = new Vector3(0, 0, 0);
-        transform.localScale = new Vector3(0, 0, 0);
+        Get<Renderer>().enabled = false;
     }
 }

@@ -23,7 +23,8 @@ namespace KModkitLib
 
             Display.Get<KMSelectable>().OnInteract += () =>
             {
-                if (!IsEditor) ButtonEffect(Get<KMSelectable>(), 0.1f, "OpenDisplay");
+                if (IsSolved) return false;
+                if (!Application.isEditor) ButtonEffect(Get<KMSelectable>(), 0.1f, "OpenDisplay");
                 Display.Activate();
                 return true;
             };
