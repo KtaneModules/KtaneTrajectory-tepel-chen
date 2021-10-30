@@ -49,7 +49,7 @@ class PaperBehaviour : CacheableBehaviour
     {
 		for(var i = 0; i < 3; i++)
         {
-			icons[i] = new Icon(IconsTextures[index[i]], isClock[i] ? 0.5f : -0.5f);
+			icons[i] = new Icon(IconsTextures[index[i]], isClock[i] ? 0.2f : -0.2f);
         }
     }
 
@@ -110,7 +110,7 @@ class PaperBehaviour : CacheableBehaviour
 
 	private void UpdateColor()
 	{
-		colorOffset += Time.deltaTime * 2.8f;
+		colorOffset += Time.deltaTime;
 		if (colorOffset > 3) colorOffset -= 3;
 		if (colorOffset < 1) color = new Color(colorOffset, 0, 1 - colorOffset, 1);
 		else if (colorOffset < 2) color = new Color(2 - colorOffset, colorOffset - 1, 0, 1);
