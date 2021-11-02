@@ -11,6 +11,7 @@ internal class Puzzle
     Configuration[] configurations;
 
     internal State[] currentStates;
+    internal int[] possibleMovements;
     ILog logger;
 
     internal Puzzle(ILog logger)
@@ -24,7 +25,6 @@ internal class Puzzle
         logger.Log($"Configuration B: {configurations[1]}");
         logger.Log($"Configuration C: {configurations[2]}");
         var possibleAnswerState = State.RandomState();
-        int[] possibleMovements;
         do
         {
             possibleMovements = Enumerable.Range(0, 3).Select(_ => UnityEngine.Random.Range(0, 4)).ToArray();

@@ -30,7 +30,9 @@ class PaperBehaviour : CacheableBehaviour
 	Color color;
 	private Coroutine updatePaperCoroutine;
 	private bool isSolved = false;
-
+	internal bool isTP = false;
+	internal float xSpeed = 0;
+	internal float ySpeed = 0;
 	void Start()
 	{
 		drawLineKernel = new DrawLineKernel(DrawlineShader);
@@ -61,7 +63,7 @@ class PaperBehaviour : CacheableBehaviour
 			foreach (var icon in icons) icon.Update();
 			UpdateColor();
 			if(isSolved) Draw(0);
-			else if (isInteracted)
+			else if (isInteracted && !isTP)
 			{
 				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Get<MeshCollider>().Raycast(ray, out RaycastHit hit, 100.0f))
@@ -71,6 +73,10 @@ class PaperBehaviour : CacheableBehaviour
                 {
 					Draw(1);
                 }
+            }
+			else if(isTP && xSpeed != 0 && ySpeed != 0)
+            {
+				Draw(new Vector2((float)Math.Sin(xSpeed * 18 * Time.realtimeSinceStartup) * 128 + 128, (float)Math.Sin(ySpeed * 18 * Time.realtimeSinceStartup) * 128 + 128));
             }
 			else
 			{

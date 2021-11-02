@@ -1,98 +1,104 @@
 ﻿
 using KeepCoding;
+using System;
 using System.Collections;
 using System.Linq;
+using KModkitLib;
 using UnityEngine;
+using System.Reflection;
 
-namespace KModkitLib
+public class TrajectoryModule : ModuleScript
 {
+    [SerializeField]
+    internal PaperBehaviour Drawing;
+    [SerializeField]
+    internal DisplayBehaviour Display;
 
-    public class TrajectoryModule : ModuleScript
+    internal Puzzle puzzle;
+
+    IEnumerator Start()
     {
-        [SerializeField]
-        PaperBehaviour Drawing;
-        [SerializeField]
-        DisplayBehaviour Display;
+        Get<KMSelectable>().OnFocus += HandleFocus;
+        Get<KMSelectable>().OnDefocus += HandleDefocus;
 
-        Puzzle puzzle;
-
-        IEnumerator Start()
+        Display.Get<KMSelectable>().OnInteract += () =>
         {
-            Get<KMSelectable>().OnFocus += HandleFocus;
-            Get<KMSelectable>().OnDefocus += HandleDefocus;
+            if (IsSolved) return false;
+            if (!Application.isEditor) ButtonEffect(Get<KMSelectable>(), 0.1f, "OpenDisplay");
+            Display.Activate();
+            return true;
+        };
 
-            Display.Get<KMSelectable>().OnInteract += () =>
-            {
-                if (IsSolved) return false;
-                if (!Application.isEditor) ButtonEffect(Get<KMSelectable>(), 0.1f, "OpenDisplay");
-                Display.Activate();
-                return true;
-            };
+        Display.Get<KMSelectable>().OnDefocus += () =>
+        {
+            PlaySound("CloseDisplay");
+            Display.Deactivate();
+            HandleFocus();
+        };
 
-            Display.Get<KMSelectable>().OnDefocus += () =>
-            {
-                PlaySound("CloseDisplay");
-                Display.Deactivate();
-                HandleFocus();
-            };
+        Display.OnClose += () =>
+        {
+#if DEBUG
+            Type t = ReflectionHelper.FindType("TestHarness");
+            t.GetMethod("Cancel", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(FindObjectOfType(t), new object[] { });
+#else
+            KTInputManager.Instance.SelectableManager.HandleCancel();
+#endif
+        };
 
-            Display.OnClose += () =>
-            {
-                if(!Application.isEditor) KTInputManager.Instance.SelectableManager.HandleCancel();
-            };
+        puzzle = new Puzzle(this);
+        SetIcons();
 
-            puzzle = new Puzzle(this);
+        Display.OnConfigPress += (int i) =>
+        {
+            PlaySound("DisplayButton");
+            puzzle.ApplyConfiguration(i);
             SetIcons();
+        };
 
-            Display.OnConfigPress += (int i) =>
-            {
-                PlaySound("DisplayButton");
-                puzzle.ApplyConfiguration(i);
-                SetIcons();
-            };
-
-            Display.OnReset += () =>
-            {
-                PlaySound("DisplayButton");
-                puzzle.Reset();
-            };
-            Display.OnSubmit += HandleSubmit;
-
-            yield return null;
-            SetIcons();
-        }
-
-        private void HandleSubmit()
+        Display.OnReset += () =>
         {
-            if (!Application.isEditor)
-            {
-                KTInputManager.Instance.SelectableManager.HandleCancel();
-            }
-            if (puzzle.Check())
-            {
-                Drawing.HandleSolve(() => { Solve(); });
-            } else
-            {
-                Drawing.HandleStrike(() => { Strike(); });
-            }
-        }
+            PlaySound("DisplayButton");
+            puzzle.Reset();
+        };
+        Display.OnSubmit += HandleSubmit;
 
-        void HandleFocus()
+        yield return null;
+        SetIcons();
+    }
+
+    private void HandleSubmit()
+    {
+#if DEBUG
+        Type t = ReflectionHelper.FindType("TestHarness");
+        t.GetMethod("Cancel", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(FindObjectOfType(t), new object[] { });
+#else
+        KTInputManager.Instance.SelectableManager.HandleCancel();
+#endif
+        if (puzzle.Check())
         {
-            Drawing.isInteracted = true;
-        }
-
-        void HandleDefocus()
+            Drawing.HandleSolve(() => { Solve(); });
+        } else
         {
-            Drawing.isInteracted = false;
+            Drawing.HandleStrike(() => { Strike(); });
         }
+    }
 
-        void SetIcons()
-        {
-            var index = puzzle.currentStates.Select(state => state.place.ToIconIndex()).ToArray(); 
-            var isClock = puzzle.currentStates.Select(state => state.isClock).ToArray();
+    void HandleFocus()
+    {
+        Drawing.isInteracted = true;
+    }
 
-            Drawing.SetIcons(index, isClock);
-        }
-	}
+    void HandleDefocus()
+    {
+        Drawing.isInteracted = false;
+    }
+
+    void SetIcons()
+    {
+        var index = puzzle.currentStates.Select(state => state.place.ToIconIndex()).ToArray(); 
+        var isClock = puzzle.currentStates.Select(state => state.isClock).ToArray();
+
+        Drawing.SetIcons(index, isClock);
+    }
 }

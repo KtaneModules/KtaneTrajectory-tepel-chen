@@ -8,13 +8,13 @@ using UnityEngine;
 class DisplayBehaviour: CacheableBehaviour
 {
     [SerializeField]
-    KMSelectable SubmitButton;
+    internal KMSelectable SubmitButton;
     [SerializeField]
-    KMSelectable ResetButton;
+    internal KMSelectable ResetButton;
     [SerializeField]
-    KMSelectable[] ConfigButtons;
+    internal KMSelectable[] ConfigButtons;
     [SerializeField]
-    KMSelectable CloseButton;
+    internal KMSelectable CloseButton;
     [SerializeField]
     ComputeShader hologramShader;
 
@@ -24,7 +24,7 @@ class DisplayBehaviour: CacheableBehaviour
     internal Action<int> OnConfigPress;
     internal Action OnClose;
 
-    private bool isActive;
+    internal bool isActive;
     private float str = 60;
     private Coroutine animationCoroutine;
     private Texture baseTexture;

@@ -23,10 +23,7 @@ MonoBehaviour:
     Special thanks to meh(ktane1) and BlvdBroken for improving the manual.
 
 
-    Manual: https://ktane.timwi.de/HTML/Trajectory.html
-
-
-    TP support? ...maybe someday.'
-  version: 1.2.2
+    Manual: https://ktane.timwi.de/HTML/Trajectory.html'
+  version: 1.3.0
   outputFolder: E:\Steam\steamapps\common\Keep Talking and Nobody Explodes\mods
   previewImage: {fileID: 2800000, guid: 78529e50020e4e24d90ecc3f7bfac0cb, type: 3}
