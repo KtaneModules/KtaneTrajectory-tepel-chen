@@ -27,6 +27,7 @@ class TrajectoryTP : TPScript<TrajectoryModule>
     public override IEnumerator Process(string command)
     {
         yield return null;
+        Module.isTP = true;
         string[] splitted = command
             .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
             .Select(str => str.Trim().ToLower())

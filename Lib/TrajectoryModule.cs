@@ -15,6 +15,7 @@ public class TrajectoryModule : ModuleScript
     internal DisplayBehaviour Display;
 
     internal Puzzle puzzle;
+    internal bool isTP = false;
 
     IEnumerator Start()
     {
@@ -60,6 +61,7 @@ public class TrajectoryModule : ModuleScript
         {
             PlaySound("DisplayButton");
             puzzle.Reset();
+            SetIcons();
         };
         Display.OnSubmit += HandleSubmit;
 
@@ -73,7 +75,7 @@ public class TrajectoryModule : ModuleScript
         Type t = ReflectionHelper.FindType("TestHarness");
         t.GetMethod("Cancel", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(FindObjectOfType(t), new object[] { });
 #else
-        KTInputManager.Instance.SelectableManager.HandleCancel();
+        if(!isTP) KTInputManager.Instance.SelectableManager.HandleCancel();
 #endif
         if (puzzle.Check())
         {
